@@ -1,0 +1,27 @@
+name: truth_or_dare_lite
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+dependencies:
+  change_app_package_name: ^1.1.0
+  equatable: ^2.0.5
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.2
+  flutter_platform_widgets: ^3.3.1
+  flutter_slidable: ^3.0.0
+  hydrated_bloc: ^9.1.0
+  path_provider: ^2.0.14
+  simple_animations: ^5.0.0+3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
