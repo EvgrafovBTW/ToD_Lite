@@ -15,6 +15,7 @@ dependencies:
   flutter_platform_widgets: ^3.3.1
   flutter_slidable: ^3.0.0
   hydrated_bloc: ^9.1.0
+  overlay_support: ^2.1.0
   path_provider: ^2.0.14
   simple_animations: ^5.0.0+3
 
