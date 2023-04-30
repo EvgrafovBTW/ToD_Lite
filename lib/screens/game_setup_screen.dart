@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:truth_or_dare_lite/logic/blocs/game_bloc/bloc/game_bloc.dart';
+import 'package:truth_or_dare_lite/logic/models/game_mode_model.dart';
+import 'package:truth_or_dare_lite/logic/models/player_model.dart';
+import 'package:truth_or_dare_lite/screens/components/game_mode_card.dart';
+import 'package:truth_or_dare_lite/screens/components/player_badge.dart';
+import 'package:truth_or_dare_lite/screens/components/settings_button.dart';
 import 'package:truth_or_dare_lite/screens/game_screen.dart';
 import 'package:truth_or_dare_lite/utils.dart';
 
@@ -9,91 +14,83 @@ class GameSetupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void startGame(GameModeModel model) {
+      BlocProvider.of<GameBloc>(context)
+        ..add(StartGame(model.id))
+        ..add(
+          EnvokeGameDescision(
+            playerModel: BlocProvider.of<GameBloc>(context).state.players.first,
+          ),
+        );
+      platformNavigateTo(
+        context: context,
+        screen: GameScreen(model),
+      );
+    }
+
     return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        actions: const [SettingsButton()],
+        title: const Text('Выберите режим игры'),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
-          //TODO сверстать экран режимов
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    BackButton(),
-                    Text('Выберите режим игры'),
-                  ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BlocBuilder<GameBloc, GameState>(
+                  builder: (context, state) {
+                    return Wrap(
+                      children: [
+                        for (PlayerModel player in state.players)
+                          PlayerBadge(
+                            player: player,
+                            //TODO убрать актив либо здеьс заменить на другой виджет
+                            activeId: 0,
+                          ),
+                      ],
+                    );
+                  },
                 ),
-              ),
-              Flexible(
-                flex: 3,
-                child: GridView.count(
+                GridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
                   children: [
                     GameModeCard(
-                      'Заполнить профиль',
+                      FirstGameModel(),
                       onTap: () {
-                        platformNavigateTo(
-                          context: context,
-                          screen: const GameScreen(),
-                        );
+                        startGame(FirstGameModel());
                       },
-                      icon: const Icon(
-                        Icons.person_outline,
-                      ),
+                    ),
+                    GameModeCard(
+                      SecondGameModel(),
+                      onTap: () {
+                        startGame(SecondGameModel());
+                      },
+                    ),
+                    GameModeCard(
+                      ThirdGameModel(),
+                      onTap: () {
+                        startGame(ThirdGameModel());
+                      },
+                    ),
+                    GameModeCard(
+                      FourthGameModel(),
+                      onTap: () {
+                        startGame(FourthGameModel());
+                      },
                     ),
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GameModeCard extends StatelessWidget {
-  final String label;
-  final Widget? icon;
-  final VoidCallback onTap;
-  const GameModeCard(
-    this.label, {
-    this.icon,
-    required this.onTap,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Expanded(
-                child: icon != null
-                    ? FittedBox(
-                        child: icon!,
-                      )
-                    : const SizedBox(),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.height * 0.03),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

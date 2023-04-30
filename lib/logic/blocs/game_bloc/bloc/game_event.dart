@@ -7,9 +7,15 @@ abstract class GameEvent extends Equatable {
   List<Object> get props => [];
 }
 
+//! Эвент редактирования игроков
 class AddPlayer extends GameEvent {
   final PlayerModel player;
   const AddPlayer(this.player);
+}
+
+class EditPlayer extends GameEvent {
+  final PlayerModel player;
+  const EditPlayer(this.player);
 }
 
 class RemovePlayer extends GameEvent {
@@ -17,14 +23,29 @@ class RemovePlayer extends GameEvent {
   const RemovePlayer(this.player);
 }
 
-class StartGameSetup extends GameEvent {
-  final int modeId;
-
-  const StartGameSetup(this.modeId);
-}
-
+//! Эвенты старта\завершения игры
 class StartGame extends GameEvent {
   final int modeId;
 
   const StartGame(this.modeId);
+}
+
+class EndGame extends GameEvent {}
+
+//! Эвенты для игрового цикла
+abstract class GameplayEvent extends GameEvent {
+  final PlayerModel playerModel;
+  const GameplayEvent({required this.playerModel});
+}
+
+class EnvokeGameDescision extends GameplayEvent {
+  const EnvokeGameDescision({required super.playerModel});
+}
+
+class EnvokeGameQuest extends GameplayEvent {
+  const EnvokeGameQuest({required super.playerModel});
+}
+
+class GameNextTurn extends GameplayEvent {
+  const GameNextTurn({required super.playerModel});
 }

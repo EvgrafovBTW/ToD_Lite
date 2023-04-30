@@ -2,12 +2,15 @@
 part of 'game_bloc.dart';
 
 class GameState extends Equatable {
-  const GameState({this.players = const []});
+  const GameState(
+      {this.players = const [], this.modeId = 0, this.activePlayerId = 0});
 
   final List<PlayerModel> players;
+  final int modeId;
+  final int activePlayerId;
 
   @override
-  List<Object> get props => [players];
+  List<Object> get props => [players, modeId, activePlayerId];
 
   GameState copyWith({
     List<PlayerModel>? players,
@@ -18,15 +21,26 @@ class GameState extends Equatable {
   }
 }
 
-class GameInitial extends GameState {}
-
-class GameSetup extends GameState {
-  final int modeId;
-  const GameSetup({
-    required this.modeId,
+class GameOngoing extends GameState {
+  const GameOngoing({
+    required super.players,
+    required super.modeId,
+    required super.activePlayerId,
   });
 }
 
-class GameOngoing extends GameSetup {
-  const GameOngoing({required super.modeId});
+class GameOngoingPlayerDeicide extends GameOngoing {
+  const GameOngoingPlayerDeicide({
+    required super.modeId,
+    required super.players,
+    required super.activePlayerId,
+  });
+}
+
+class GameOngoingPlayerQuest extends GameOngoing {
+  const GameOngoingPlayerQuest({
+    required super.modeId,
+    required super.players,
+    required super.activePlayerId,
+  });
 }

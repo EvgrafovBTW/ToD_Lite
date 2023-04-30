@@ -154,7 +154,7 @@ class MainColorChangeSheet extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text('Ночной режим'),
+                      const Text('Ночной режим'),
                       PlatformSwitch(
                         value: state.isDarkMode,
                         onChanged: (v) {

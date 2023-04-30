@@ -10,7 +10,9 @@ import 'package:truth_or_dare_lite/logic/models/player_model.dart';
 import 'package:truth_or_dare_lite/screens/settings_screen.dart';
 
 class PlayerAddDialog extends StatefulWidget {
+  final PlayerModel? player;
   const PlayerAddDialog({
+    this.player,
     super.key,
   });
 
@@ -19,10 +21,9 @@ class PlayerAddDialog extends StatefulWidget {
 }
 
 class _PlayerAddDialogState extends State<PlayerAddDialog> {
-  TextEditingController controller = TextEditingController();
-  ValueNotifier genderValue = ValueNotifier<String>('N');
-  ValueNotifier color = ValueNotifier<Color>(
-      Colors.primaries[Random().nextInt(Colors.primaries.length - 1)]);
+  late TextEditingController controller;
+  late ValueNotifier genderValue;
+  late ValueNotifier color;
   bool validatePlayerData() {
     if (controller.value.text.isEmpty) {
       showSimpleNotification(const Text('Заполните имя игрока'));
@@ -36,6 +37,30 @@ class _PlayerAddDialogState extends State<PlayerAddDialog> {
   }
 
   @override
+  void initState() {
+    if (widget.player != null) {
+      controller = TextEditingController(text: widget.player!.name);
+      genderValue = ValueNotifier<String>(widget.player!.gender);
+      color = ValueNotifier<Color>(widget.player!.playerColor);
+    } else {
+      controller = TextEditingController();
+      genderValue = ValueNotifier<String>('N');
+      color = ValueNotifier<Color>(
+        Colors.primaries[Random().nextInt(Colors.primaries.length - 1)],
+      );
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    genderValue.dispose();
+    color.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: SizedBox.fromSize(
@@ -45,7 +70,9 @@ class _PlayerAddDialogState extends State<PlayerAddDialog> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const DialogSectionName('Новый игрок'),
+                DialogSectionName(widget.player != null
+                    ? 'Редактировать игрока'
+                    : 'Новый игрок'),
                 TextField(
                   controller: controller,
                   textCapitalization: TextCapitalization.sentences,
@@ -119,14 +146,28 @@ class _PlayerAddDialogState extends State<PlayerAddDialog> {
                       const VerticalDivider(thickness: 0.2),
                       TextButton(
                         onPressed: () {
-                          if (validatePlayerData()) {
+                          if (widget.player == null) {
+                            if (validatePlayerData()) {
+                              BlocProvider.of<GameBloc>(context).add(
+                                AddPlayer(
+                                  PlayerModel(
+                                    id: BlocProvider.of<GameBloc>(context)
+                                        .state
+                                        .players
+                                        .length,
+                                    gender: genderValue.value,
+                                    name: controller.value.text,
+                                    playerColor: color.value,
+                                  ),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            }
+                          } else {
                             BlocProvider.of<GameBloc>(context).add(
-                              AddPlayer(
+                              EditPlayer(
                                 PlayerModel(
-                                  id: BlocProvider.of<GameBloc>(context)
-                                      .state
-                                      .players
-                                      .length,
+                                  id: widget.player!.id,
                                   gender: genderValue.value,
                                   name: controller.value.text,
                                   playerColor: color.value,
@@ -136,7 +177,8 @@ class _PlayerAddDialogState extends State<PlayerAddDialog> {
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('Добавить'),
+                        child: Text(
+                            widget.player != null ? 'Применить' : 'Добавить'),
                       ),
                     ],
                   ),

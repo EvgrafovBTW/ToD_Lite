@@ -5,10 +5,9 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:truth_or_dare_lite/logic/blocs/game_bloc/bloc/game_bloc.dart';
 import 'package:truth_or_dare_lite/logic/models/player_model.dart';
 import 'package:truth_or_dare_lite/screens/components/player_add_dialog.dart';
+import 'package:truth_or_dare_lite/screens/components/settings_button.dart';
 import 'package:truth_or_dare_lite/screens/components/setup_player_card.dart';
-import 'package:truth_or_dare_lite/screens/game_screen.dart';
 import 'package:truth_or_dare_lite/screens/game_setup_screen.dart';
-import 'package:truth_or_dare_lite/screens/settings_screen.dart';
 import 'package:truth_or_dare_lite/utils.dart';
 
 class MainScreen extends StatelessWidget {
@@ -31,26 +30,15 @@ class MainScreen extends StatelessWidget {
         onPressed: addNewPlayer,
         child: const Icon(Icons.add),
       ),
+      appBar: AppBar(
+        actions: const [SettingsButton()],
+      ),
       body: SafeArea(
         child: SizedBox.expand(
           child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {
               return Column(
                 children: [
-                  Flexible(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: () => platformNavigateTo(
-                            context: context,
-                            screen: const SettingsScreen(),
-                          ),
-                          icon: const Icon(Icons.settings),
-                        )
-                      ],
-                    ),
-                  ),
                   Expanded(
                     flex: 10,
                     child: state.players.isEmpty
